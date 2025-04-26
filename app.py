@@ -23,12 +23,18 @@ def upload_file():
             filepath = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(filepath)
 
-            # Read and encode the image bytes
+            # Read the image bytes
             with open(filepath, "rb") as image_file:
                 image_bytes = image_file.read()
-            encoded_image = base64.b64encode(image_bytes).decode('utf-8')
 
-            # Send image to OpenAI GPT-4o Vision
+            # Upload image to OpenAI and get file_id
+            upload_response = client.files.create(
+                file=image_bytes,
+                purpose="vision"
+            )
+            file_id = upload_response.id
+
+            # Send the file_id to OpenAI Vision API
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
@@ -47,7 +53,7 @@ def upload_file():
                         "role": "user",
                         "content": [
                             {"type": "text", "text": "Here is a screenshot. Please extract the text and analyze it."},
-                            {"type": "image", "image": {"base64": encoded_image}}
+                            {"type": "file", "file_id": file_id}
                         ]
                     }
                 ]
