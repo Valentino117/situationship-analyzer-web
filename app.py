@@ -1,4 +1,5 @@
 import os
+import base64
 from flask import Flask, request, render_template
 from openai import OpenAI
 
@@ -22,18 +23,15 @@ def upload_file():
             filepath = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(filepath)
 
-            # Read the image bytes
+            # Read and encode the image bytes
             with open(filepath, "rb") as image_file:
                 image_bytes = image_file.read()
+            encoded_image = base64.b64encode(image_bytes).decode('utf-8')
 
-            # Upload image to OpenAI with filename and mime type
-            upload_response = client.files.create(
-                file=("screenshot.png", image_bytes, "image/png"),
-                purpose="vision"
-            )
-            file_id = upload_response.id
+            # Build data URL
+            data_url = f"data:image/png;base64,{encoded_image}"
 
-            # Send the file_id correctly to GPT-4o Vision
+            # Send the image as a data URL to OpenAI
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
@@ -52,7 +50,7 @@ def upload_file():
                         "role": "user",
                         "content": [
                             {"type": "text", "text": "Here is a screenshot. Please extract the text and analyze it."},
-                            {"type": "file", "file": {"file_id": file_id}}
+                            {"type": "image_url", "image_url": {"url": data_url}}
                         ]
                     }
                 ]
