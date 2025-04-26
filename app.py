@@ -1,5 +1,4 @@
 import os
-import base64
 from flask import Flask, request, render_template
 from openai import OpenAI
 
@@ -34,7 +33,7 @@ def upload_file():
             )
             file_id = upload_response.id
 
-            # Send the file_id to OpenAI Vision API
+            # Send the file_id properly to OpenAI Vision API
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
@@ -53,7 +52,7 @@ def upload_file():
                         "role": "user",
                         "content": [
                             {"type": "text", "text": "Here is a screenshot. Please extract the text and analyze it."},
-                            {"type": "file", "file_id": file_id}
+                            {"type": "file", "file": {"id": file_id}}
                         ]
                     }
                 ]
