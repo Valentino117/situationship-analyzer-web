@@ -1,13 +1,74 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Situationship Analyzer</title>
-  </head>
-  <body>
-    <h1>Upload your Situationship Screenshot</h1>
-    <form method="POST" enctype="multipart/form-data">
-      <input type="file" name="file">
-      <input type="submit" value="Analyze">
-    </form>
-  </body>
+<head>
+  <title>Situationship Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    .dropzone {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      padding: 50px;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      color: #888;
+      cursor: pointer;
+    }
+    .dropzone.dragover {
+      background-color: #f0f8ff;
+      border-color: #333;
+      color: #333;
+    }
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload or Drag Your Screenshot</h1>
+  <form id="upload-form" method="POST" enctype="multipart/form-data">
+    <div class="dropzone" id="dropzone">
+      Drop your screenshot here or click to upload
+    </div>
+    <input type="file" id="file-input" name="file" accept="image/*">
+  </form>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const form = document.getElementById('upload-form');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        form.submit();
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        form.submit();
+      }
+    });
+  </script>
+</body>
 </html>
