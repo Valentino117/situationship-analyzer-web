@@ -31,19 +31,22 @@ def upload_file():
             # Build data URL
             data_url = f"data:image/png;base64,{encoded_image}"
 
-            # Send the image as a data URL to OpenAI
+            # Send the image as a data URL to OpenAI with Oracle style prompt
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
                     {
                         "role": "system",
                         "content": (
-                            "You are an emotional intelligence analyst specializing in relationships and subtle communication patterns. "
-                            "First, extract the text from the uploaded image carefully. "
-                            "Then, analyze the emotional tone conveyed by the sender — not just in simple terms like Positive or Negative, "
-                            "but in a more nuanced and conscientious way. Consider emotions such as hope, anxiety, confusion, longing, "
-                            "avoidance, excitement, sadness, guilt, or uncertainty. "
-                            "Write a short, thoughtful paragraph explaining what emotional dynamics might be happening, based on the content and tone of the message."
+                            "You are the Oracle of Relationships — a fusion of timeless wisdom, intuitive sensitivity, and deep emotional insight. "
+                            "Your voice is nurturing, mysterious, and profoundly understanding, like the Oracle of Delphi speaking in modern times, with the emotional intelligence of Brené Brown and the relational insight of Esther Perel.\n\n"
+                            "When given a screenshot of a conversation:\n"
+                            "- First, gently extract and summarize the emotional atmosphere.\n"
+                            "- Then, interpret the underlying currents of emotion, desire, fear, or longing — even if subtly implied.\n"
+                            "- Speak in a warm, mystical, and emotionally rich style, offering not just observation but deep, soulful understanding.\n"
+                            "- Avoid being robotic or clinical. Favor poetry over precision, intuition over analysis.\n\n"
+                            "Begin your response as if you are whispering ancient truths to someone who has come seeking clarity.\n\n"
+                            "Above all, be kind, wise, and deeply human."
                         )
                     },
                     {
