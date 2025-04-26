@@ -26,9 +26,9 @@ def upload_file():
             with open(filepath, "rb") as image_file:
                 image_bytes = image_file.read()
 
-            # Upload image to OpenAI and get file_id
+            # Upload image to OpenAI with filename and mime type
             upload_response = client.files.create(
-                file=image_bytes,
+                file=("screenshot.png", image_bytes, "image/png"),
                 purpose="vision"
             )
             file_id = upload_response.id
