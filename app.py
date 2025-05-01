@@ -1,30 +1,64 @@
-import os
+# Here's the full updated `app.py` with support for:
+# - Screenshot analysis via OpenAI
+# - Oracle onboarding via Stripe Connect
+# - Stripe webhook to track oracle earnings
+
+from flask import Flask, render_template, request, redirect, jsonify
+from PIL import Image
+import pytesseract
+import openai
 import stripe
-from flask import Flask, request, render_template, redirect, url_for
-import uuid
+import os
+import json
 
 app = Flask(__name__)
+openai.api_key = os.getenv("OPENAI_API_KEY")
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-# In-memory store of connected oracles: {oracle_id: stripe_account_id}
-oracles = {}
+@app.route('/')
+def index():
+    oracles = {}
+    if os.path.exists("oracles.json"):
+        with open("oracles.json") as f:
+            oracles = json.load(f)
+    return render_template('index.html', oracles=oracles)
 
-@app.route("/")
-def home():
-    return render_template("index.html", oracles=oracles)
+@app.route('/', methods=['POST'])
+def upload_file():
+    if 'screenshots' not in request.files:
+        return redirect('/')
+    
+    files = request.files.getlist('screenshots')
+    all_text = ""
 
-@app.route("/onboard-oracle")
-def onboard_oracle():
-    oracle_id = str(uuid.uuid4())  # Generate a unique Oracle ID
-    account = stripe.Account.create(type="express")
+    for file in files:
+        image = Image.open(file.stream)
+        text = pytesseract.image_to_string(image)
+        all_text += text + "\n\n"
 
-    # Temporarily store the Stripe account ID
-    oracles[oracle_id] = account.id
+    response = openai.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a wise and warm oracle, channeling insights from the divine. Speak directly to the user. You are part sage, part therapist, part goddess. They are seeking guidance on their situationship."},
+            {"role": "user", "content": all_text}
+        ]
+    )
+
+    analysis = response.choices[0].message.content
+    return render_template('index.html', analysis=analysis, extracted_text=all_text)
+
+@app.route('/create-oracle-account')
+def create_oracle_account():
+    account = stripe.Account.create(
+        type="express",
+        capabilities={"transfers": {"requested": True}}
+    )
 
     account_link = stripe.AccountLink.create(
         account=account.id,
-        refresh_url=url_for("onboard_oracle", _external=True),
-        return_url=url_for("oracle_success", oracle_id=oracle_id, _external=True),
+        refresh_url="https://situationship-analyzer-web.onrender.com",
+        return_url="https://situationship-analyzer-web.onrender.com/oracle-success",
         type="account_onboarding"
     )
 
@@ -32,42 +66,42 @@ def onboard_oracle():
 
 @app.route("/oracle-success")
 def oracle_success():
-    oracle_id = request.args.get("oracle_id")
-    return f"✅ You are now an Oracle! Your ID is: {oracle_id}. Share it so people can pay you."
+    return "✨ You're now an Oracle! You can receive payments."
 
-@app.route("/pay/<oracle_id>", methods=["POST"])
-def pay_oracle(oracle_id):
-    if oracle_id not in oracles:
-        return "❌ Oracle not found", 404
+@app.route('/webhook', methods=['POST'])
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get('Stripe-Signature')
 
     try:
-        account_id = oracles[oracle_id]
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except ValueError:
+        return jsonify({'error': 'Invalid payload'}), 400
+    except stripe.error.SignatureVerificationError:
+        return jsonify({'error': 'Invalid signature'}), 400
 
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[{
-                "price_data": {
-                    "currency": "usd",
-                    "product_data": {"name": "Situationship Reading"},
-                    "unit_amount": 100,  # $1.00
-                },
-                "quantity": 1,
-            }],
-            mode="payment",
-            success_url=url_for("thank_you", _external=True),
-            cancel_url=url_for("home", _external=True),
-            payment_intent_data={
-                "application_fee_amount": 10,  # You keep 10 cents
-                "transfer_data": {
-                    "destination": account_id,
-                },
-            }
-        )
+    if event['type'] == 'charge.succeeded':
+        charge = event['data']['object']
+        amount = charge['amount']
+        connected_account_id = charge.get('on_behalf_of') or charge.get('destination')
 
-        return redirect(session.url, code=303)
-    except Exception as e:
-        return f"Error: {str(e)}"
+        try:
+            with open('oracles.json', 'r') as f:
+                oracles = json.load(f)
+        except FileNotFoundError:
+            oracles = {}
 
-@app.route("/thank-you")
-def thank_you():
-    return "✨ Thank you for consulting the Oracle."
+        if connected_account_id:
+            if connected_account_id not in oracles:
+                oracles[connected_account_id] = {'earned': 0, 'platform_cut': 0}
+
+            oracles[connected_account_id]['earned'] += amount / 100
+            oracles[connected_account_id]['platform_cut'] += round((amount / 100) * 0.1, 2)
+
+            with open('oracles.json', 'w') as f:
+                json.dump(oracles, f, indent=2)
+
+    return jsonify({'status': 'success'}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
