@@ -1,70 +1,73 @@
 import os
-import io
-from flask import Flask, request, render_template, redirect
-from PIL import Image
-import pytesseract
-import openai
 import stripe
+from flask import Flask, request, render_template, redirect, url_for
+import uuid
 
 app = Flask(__name__)
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-# Load API keys from environment variables
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
+# In-memory store of connected oracles: {oracle_id: stripe_account_id}
+oracles = {}
 
-@app.route("/", methods=["GET", "POST"])
-def upload_file():
-    if request.method == "POST":
-        files = request.files.getlist("screenshot")
-        all_text = []
+@app.route("/")
+def home():
+    return render_template("index.html", oracles=oracles)
 
-        for file in files:
-            image = Image.open(file.stream)
-            extracted_text = pytesseract.image_to_string(image)
-            all_text.append(extracted_text.strip())
-
-        full_text = "\n---\n".join(all_text)
-
-        prompt = (
-            "You are the Oracle of Delphi, crossed with Esther Perel and Brené Brown. "
-            "Your role is to receive confusing screenshots of modern texting situationships, "
-            "and help the user understand the emotional truth of what’s going on. "
-            "Address the user directly as 'you', speak with mystical, wise tone, and do not reference the fact this is AI.\n\n"
-            f"Here is the message(s):\n{full_text}\n\n"
-            "What is going on in the heart and mind of the person texting? What do you want the user to know?"
-        )
-
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a wise oracle who gives insight into relationship dynamics."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-
-        analysis = response.choices[0].message.content.strip()
-
-        return render_template("index.html", analysis=analysis, extracted_text=full_text)
-
-    return render_template("index.html")
-
-# === ORACLE ONBOARDING ===
 @app.route("/onboard-oracle")
 def onboard_oracle():
+    oracle_id = str(uuid.uuid4())  # Generate a unique Oracle ID
     account = stripe.Account.create(type="express")
+
+    # Temporarily store the Stripe account ID
+    oracles[oracle_id] = account.id
 
     account_link = stripe.AccountLink.create(
         account=account.id,
-        refresh_url="https://situationship-analyzer-web.onrender.com/onboard-oracle",
-        return_url="https://situationship-analyzer-web.onrender.com/oracle-success",
-        type="account_onboarding",
+        refresh_url=url_for("onboard_oracle", _external=True),
+        return_url=url_for("oracle_success", oracle_id=oracle_id, _external=True),
+        type="account_onboarding"
     )
 
     return redirect(account_link.url)
 
 @app.route("/oracle-success")
 def oracle_success():
-    return "🎉 You're now an Oracle! You can receive payments."
+    oracle_id = request.args.get("oracle_id")
+    return f"✅ You are now an Oracle! Your ID is: {oracle_id}. Share it so people can pay you."
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route("/pay/<oracle_id>", methods=["POST"])
+def pay_oracle(oracle_id):
+    if oracle_id not in oracles:
+        return "❌ Oracle not found", 404
+
+    try:
+        account_id = oracles[oracle_id]
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {"name": "Situationship Reading"},
+                    "unit_amount": 100,  # $1.00
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=url_for("thank_you", _external=True),
+            cancel_url=url_for("home", _external=True),
+            payment_intent_data={
+                "application_fee_amount": 10,  # You keep 10 cents
+                "transfer_data": {
+                    "destination": account_id,
+                },
+            }
+        )
+
+        return redirect(session.url, code=303)
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+@app.route("/thank-you")
+def thank_you():
+    return "✨ Thank you for consulting the Oracle."

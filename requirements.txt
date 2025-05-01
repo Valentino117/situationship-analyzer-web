@@ -4,3 +4,4 @@ pytesseract
 Pillow
 gunicorn
 stripe
+uuid
