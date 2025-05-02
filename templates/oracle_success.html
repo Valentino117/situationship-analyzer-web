@@ -1,28 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Oracle Created</title>
+  <meta charset="UTF-8">
+  <title>You're an Oracle!</title>
   <style>
-    body { font-family: sans-serif; background: #f9f7f6; padding: 2rem; text-align: center; color: #333; }
-    .card { background: white; padding: 2rem; border-radius: 8px; max-width: 600px; margin: 2rem auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .card h2 { color: #6b2b82; }
-    .button { margin-top: 1rem; padding: 0.75rem 1.5rem; background-color: #6b2b82; color: white; border: none; border-radius: 6px; font-size: 1rem; }
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #fef6fb;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      color: #a844a1;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 2rem auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    a.button {
+      display: inline-block;
+      margin-top: 1.5rem;
+      background-color: #a844a1;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+    a.button:hover {
+      background-color: #902f91;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>🎉 You're now an Oracle!</h2>
-    <p>You can now get paid to interpret situationship screenshots for your friends using the power of AI.</p>
-    <p><strong>What’s next?</strong></p>
-    <ul style="text-align: left;">
-      <li>Ask your friends to send you a screenshot of their situationship texts.</li>
-      <li>Upload it on the next page to receive divine guidance from GPT.</li>
-      <li>Send your friend a payment link to complete the exchange.</li>
-    </ul>
-    <form action="/oracle-analysis">
-      <button class="button">Continue</button>
-    </form>
+    <h1>✨ You're officially an Oracle!</h1>
+    <p>You can now give your friends advice on their situationships—and get paid for it.</p>
+    <p>Upload screenshots of their texts and generate insights powered by AI. Then share your wisdom and collect your payment.</p>
+
+    <a class="button" href="/oracle-dashboard?account_id={{ account_id }}">
+      Go to Your Oracle Dashboard
+    </a>
   </div>
 </body>
 </html>

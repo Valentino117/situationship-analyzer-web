@@ -1,83 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Your Oracle Dashboard</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #fff7f5;
+      margin: 0;
+      padding: 2rem;
       text-align: center;
-      background-color: #fffaf6;
-      padding: 2rem;
-      color: #333;
     }
-    .section {
-      max-width: 600px;
-      margin: 2rem auto;
-      background: white;
-      border-radius: 8px;
-      padding: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    h1 {
+      color: #5e2ca5;
     }
-    input, button {
+    form {
+      margin: 2rem 0;
+    }
+    input[type="file"], input[type="text"] {
       padding: 0.5rem;
-      margin-top: 1rem;
       font-size: 1rem;
     }
     button {
-      background-color: #9b59b6;
+      background-color: #9b5de5;
       color: white;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
     }
-    a.payment-link {
-      display: inline-block;
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #2c3e50;
-      text-decoration: none;
-      background: #f3f3f3;
-      padding: 0.5rem 1rem;
+    .result {
+      margin-top: 2rem;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .link-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #f0eaff;
       border-radius: 6px;
+      font-size: 1rem;
+      word-break: break-word;
     }
   </style>
 </head>
 <body>
-  <h1>🔮 Welcome, {{ oracle_name or "Oracle" }}</h1>
+  <h1>🔮 Oracle Dashboard</h1>
+  <p>Welcome, wise one. This is your sacred portal.</p>
 
-  <div class="section">
-    <h2>💸 Generate Payment Link</h2>
-    <form action="/generate-payment-link" method="POST">
-      <input type="hidden" name="account_id" value="{{ account_id }}">
-      <button type="submit">💰 Generate Payment Link</button>
-    </form>
-    {% if payment_link %}
-      <p>Send this link to a friend:</p>
-      <a class="payment-link" href="{{ payment_link }}" target="_blank">Click here to copy the payment link</a>
-    {% endif %}
-  </div>
+  <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="account_id" value="{{ account_id }}">
+    <p><strong>1. Upload your friend's situationship screenshot</strong></p>
+    <input type="file" name="screenshot" accept="image/*" required>
+    <br><br>
+    <button type="submit">🔍 Analyze Screenshot</button>
+  </form>
 
-  <div class="section">
-    <h2>🖼️ Analyze a Situationship Screenshot</h2>
-    <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="account_id" value="{{ account_id }}">
-      <input type="file" name="screenshot" accept="image/*" required>
-      <br><br>
-      <button type="submit">✨ Analyze</button>
-    </form>
-    {% if analysis %}
-      <div style="margin-top: 2rem; text-align: left;">
-        <h3>📜 Oracle’s Wisdom:</h3>
-        <p>{{ analysis }}</p>
-      </div>
-    {% endif %}
-  </div>
+  {% if analysis %}
+    <div class="result">
+      <h3>🧠 GPT's Analysis</h3>
+      <p>{{ analysis }}</p>
+    </div>
+  {% endif %}
 
-  <div class="section">
-    <h2>📈 Your Earnings</h2>
-    <p>Total earned: ${{ oracle_data.earned or 0 }}</p>
-    <p>Platform cut: ${{ oracle_data.platform_cut or 0 }}</p>
-  </div>
+  <hr style="margin: 3rem 0;">
+
+  <form action="/generate-payment-link" method="POST">
+    <input type="hidden" name="account_id" value="{{ account_id }}">
+    <p><strong>2. Request payment from your friend</strong></p>
+    <button type="submit">💸 Generate Payment Link</button>
+  </form>
+
+  {% if payment_link %}
+    <div class="link-box">
+      <p><strong>Send this to your friend:</strong></p>
+      <a href="{{ payment_link }}" target="_blank">Click here to pay the Oracle</a>
+    </div>
+  {% endif %}
 </body>
 </html>

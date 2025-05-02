@@ -1,131 +1,130 @@
-from flask import Flask, render_template, request, redirect, jsonify
-from PIL import Image
-import pytesseract
+from flask import Flask, request, render_template, redirect
 import openai
 import stripe
+import base64
 import os
 import json
 
 app = Flask(__name__)
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
-# Load oracles from file
-def load_oracles():
-    if os.path.exists("oracles.json"):
-        with open("oracles.json") as f:
-            return json.load(f)
-    return {}
-
-# Save oracles to file
-def save_oracles(data):
-    with open("oracles.json", "w") as f:
-        json.dump(data, f, indent=2)
-
 @app.route('/')
 def index():
-    oracles = load_oracles()
-    return render_template('index.html', oracles=oracles)
+    oracles = {}
+    if os.path.exists("oracles.json"):
+        with open("oracles.json") as f:
+            oracles = json.load(f)
+    return render_template("index.html", oracles=oracles)
 
-@app.route('/create-oracle-account')
+@app.route("/create-oracle-account")
 def create_oracle_account():
-    account = stripe.Account.create(
-        type="express",
-        capabilities={"transfers": {"requested": True}}
-    )
-    account_link = stripe.AccountLink.create(
+    account = stripe.Account.create(type="express", capabilities={"transfers": {"requested": True}})
+    link = stripe.AccountLink.create(
         account=account.id,
-        refresh_url="https://situationship-analyzer-web.onrender.com",
-        return_url="https://situationship-analyzer-web.onrender.com/oracle-success",
+        refresh_url="https://situationship-analyzer-web.onrender.com/",
+        return_url=f"https://situationship-analyzer-web.onrender.com/oracle-success?account_id={account.id}",
         type="account_onboarding"
     )
-    return redirect(account_link.url)
+    return redirect(link.url)
 
-@app.route('/oracle-success')
+@app.route("/oracle-success")
 def oracle_success():
-    return render_template("oracle_success.html")
+    account_id = request.args.get("account_id")
+    return render_template("oracle_success.html", account_id=account_id)
 
-@app.route('/oracle-dashboard')
+@app.route("/oracle-dashboard")
 def oracle_dashboard():
     account_id = request.args.get("account_id")
-    if not account_id:
-        return redirect("/")
-    return render_template("oracle_analysis.html", account_id=account_id)
+    return render_template("oracle_dashboard.html", account_id=account_id)
 
-@app.route('/oracle-analysis', methods=['GET', 'POST'])
+@app.route("/oracle-analysis", methods=["POST"])
 def oracle_analysis():
-    if request.method == 'GET':
-        return redirect('/')
-
-    account_id = request.form.get("account_id")
-    screenshot = request.files.get("screenshot")
-    if not screenshot:
-        return redirect("/")
-
-    image = Image.open(screenshot.stream)
-    text = pytesseract.image_to_string(image)
+    file = request.files["screenshot"]
+    account_id = request.form["account_id"]
+    image_data = base64.b64encode(file.read()).decode("utf-8")
 
     response = openai.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4-vision-preview",
         messages=[
-            {"role": "system", "content": "You are a wise and warm oracle, channeling insights from the divine. Speak directly to the user. You are part sage, part therapist, part goddess. They are seeking guidance on their friend’s situationship."},
-            {"role": "user", "content": text}
-        ]
+            {"role": "system", "content": "You are a mystical oracle analyzing screenshots of text messages for romantic subtext. Offer wise, tender, and honest insights to the user who wants to understand what’s really going on."},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Please analyze this screenshot of a situationship conversation."},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}
+                ]
+            }
+        ],
+        max_tokens=800
     )
+
     analysis = response.choices[0].message.content
+    return render_template("oracle_dashboard.html", analysis=analysis, account_id=account_id)
 
-    # Create a Payment Link with application_fee
-    price = stripe.Price.create(
-        unit_amount=100,  # $1.00
-        currency="usd",
-        product_data={"name": "Situationship Reading"}
+@app.route("/generate-payment-link", methods=["POST"])
+def generate_payment_link():
+    account_id = request.form["account_id"]
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": "Situationship Reading"},
+                "unit_amount": 100,  # $1.00
+            },
+            "quantity": 1,
+        }],
+        payment_intent_data={
+            "application_fee_amount": 10,  # $0.10 fee
+            "transfer_data": {
+                "destination": account_id,
+            },
+            "on_behalf_of": account_id
+        },
+        mode="payment",
+        success_url="https://situationship-analyzer-web.onrender.com",
     )
-    link = stripe.PaymentLink.create(
-        line_items=[{"price": price.id, "quantity": 1}],
-        application_fee_amount=10,  # $0.10 fee for platform
-        after_completion={"type": "redirect", "redirect": {"url": "https://situationship-analyzer-web.onrender.com"}},
-        transfer_data={"destination": account_id}
-    )
+    return render_template("oracle_dashboard.html", payment_link=session.url, account_id=account_id)
 
-    return render_template("oracle_analysis.html", analysis=analysis, payment_link=link.url, account_id=account_id)
-
-@app.route('/webhook', methods=['POST'])
-def stripe_webhook():
+@app.route("/webhook", methods=["POST"])
+def webhook_received():
     payload = request.data
-    sig_header = request.headers.get('Stripe-Signature')
+    sig_header = request.headers.get("Stripe-Signature")
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-    except (ValueError, stripe.error.SignatureVerificationError):
-        return jsonify({'error': 'Invalid signature'}), 400
+    except Exception as e:
+        return str(e), 400
 
-    if event['type'] == 'charge.succeeded':
-        charge = event['data']['object']
-        amount = charge['amount'] / 100
-        account_id = charge.get('transfer_data', {}).get('destination')
+    if event["type"] == "charge.succeeded":
+        charge = event["data"]["object"]
+        connected_id = charge.get("on_behalf_of") or charge.get("destination")
+        amount = charge["amount"]
 
-        if account_id:
-            oracles = load_oracles()
+        try:
+            acct = stripe.Account.retrieve(connected_id)
+            name = acct.get("business_profile", {}).get("name", "") or acct.get("email", "") or connected_id
+        except:
+            name = connected_id
 
-            # Try to retrieve Stripe account info for name
-            try:
-                stripe_account = stripe.Account.retrieve(account_id)
-                name = stripe_account.get("individual", {}).get("first_name", "") + " " + stripe_account.get("individual", {}).get("last_name", "")
-                name = name.strip() or f"Oracle {account_id[-6:]}"
-            except Exception:
-                name = f"Oracle {account_id[-6:]}"
+        try:
+            with open("oracles.json", "r") as f:
+                oracles = json.load(f)
+        except FileNotFoundError:
+            oracles = {}
 
-            if account_id not in oracles:
-                oracles[account_id] = {'name': name, 'earned': 0, 'platform_cut': 0}
+        if connected_id not in oracles:
+            oracles[connected_id] = {"name": name, "earned": 0, "platform_cut": 0}
 
-            oracles[account_id]['earned'] += round(amount, 2)
-            oracles[account_id]['platform_cut'] += round(amount * 0.1, 2)
+        oracles[connected_id]["earned"] += amount / 100
+        oracles[connected_id]["platform_cut"] += round((amount / 100) * 0.1, 2)
 
-            save_oracles(oracles)
+        with open("oracles.json", "w") as f:
+            json.dump(oracles, f, indent=2)
 
-    return jsonify({'status': 'success'}), 200
+    return "", 200
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

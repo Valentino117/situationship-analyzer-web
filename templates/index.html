@@ -1,23 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Situationship Oracle</title>
   <style>
-    body { font-family: sans-serif; background: #f9f7f6; padding: 2rem; text-align: center; color: #333; }
-    h1 { color: #6b2b82; }
-    button, input[type="file"], input[type="text"] {
-      margin: 1rem 0;
-      padding: 0.75rem 1.5rem;
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #fff7f0;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      color: #6d28d9;
+    }
+    p {
+      font-size: 1.2rem;
+      margin: 1rem auto 2rem;
+      max-width: 600px;
+    }
+    input[type="text"] {
+      padding: 0.6rem;
+      font-size: 1rem;
+      width: 300px;
+      max-width: 90%;
+      margin-bottom: 1rem;
+    }
+    button {
+      background-color: #6d28d9;
+      color: white;
+      padding: 0.8rem 2rem;
       font-size: 1rem;
       border: none;
       border-radius: 6px;
-      background-color: #6b2b82;
-      color: white;
       cursor: pointer;
     }
-    .oracle-box { background: white; border-radius: 8px; padding: 1rem; margin: 1rem auto; max-width: 400px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .input-section { margin-top: 2rem; }
+    button:hover {
+      background-color: #5b21b6;
+    }
+    .oracle-box {
+      margin-top: 3rem;
+    }
+    .oracle-card {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem auto;
+      max-width: 500px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
   </style>
 </head>
 <body>
@@ -28,24 +58,28 @@
     <button type="submit">🧙 Become an Oracle</button>
   </form>
 
-  <div class="input-section">
-    <form action="/oracle-dashboard" method="GET">
-      <input type="text" name="account_id" placeholder="Enter Stripe Account ID" required />
-      <button type="submit">Access Oracle Dashboard</button>
-    </form>
-  </div>
+  <hr style="margin: 3rem 0;">
 
-  <h2>🧙‍♀️ Active Oracles</h2>
-  {% if oracles %}
-    {% for id, data in oracles.items() %}
-      <div class="oracle-box">
-        <strong>{{ data.name }}</strong><br/>
-        Total Earned: ${{ data.earned }}<br/>
-        Platform Cut: ${{ data.platform_cut }}
-      </div>
-    {% endfor %}
-  {% else %}
-    <p>No oracles yet — be the first!</p>
-  {% endif %}
+  <form action="/oracle-dashboard" method="GET">
+    <p><strong>Already an Oracle?</strong></p>
+    <input type="text" name="account_id" placeholder="Enter Stripe Account ID" required>
+    <br><br>
+    <button type="submit">🧭 Access Your Dashboard</button>
+  </form>
+
+  <div class="oracle-box">
+    <h2>🌟 Top Oracles</h2>
+    {% if oracles %}
+      {% for id, info in oracles.items() %}
+        <div class="oracle-card">
+          <strong>{{ info.name }}</strong><br/>
+          💰 Earnings: ${{ "%.2f"|format(info.earned) }}<br/>
+          💼 Platform Cut: ${{ "%.2f"|format(info.platform_cut) }}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No oracles have joined yet. Be the first to divine!</p>
+    {% endif %}
+  </div>
 </body>
 </html>
