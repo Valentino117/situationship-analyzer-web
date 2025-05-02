@@ -1,56 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Situationship Oracle</title>
+  <meta charset="UTF-8" />
+  <title>The Situationship Oracle</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #fdf6f0;
       text-align: center;
+      background: #fffaf6;
       padding: 2rem;
+      color: #333;
     }
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      margin: 1rem auto;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    }
-    button, input[type="submit"] {
+    button {
       padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      background-color: #9b4dca;
+      background-color: #9b59b6;
       color: white;
       border: none;
-      border-radius: 8px;
+      font-size: 1rem;
+      border-radius: 10px;
       cursor: pointer;
     }
-    input[type="text"] {
-      padding: 0.6rem;
-      width: 80%;
-      margin-top: 1rem;
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .card {
+      border: 1px solid #eee;
+      padding: 1rem;
+      margin: 2rem auto;
+      max-width: 500px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
   </style>
 </head>
 <body>
-  <h1>🔮 Situationship Oracle</h1>
+  <h1>🔮 The Situationship Oracle</h1>
+  <p style="max-width: 600px; margin: auto;">
+    Give advice on your friends' situationship texts. Get paid.
+  </p>
 
   <div class="card">
-    <h2>New here?</h2>
-    <form action="/create-oracle-account" method="GET">
-      <button type="submit">Become an Oracle</button>
+    <h2>🧙 Become an Oracle</h2>
+    <form action="/onboard-oracle" method="GET">
+      <button type="submit">Start Onboarding</button>
     </form>
   </div>
 
   <div class="card">
-    <h2>Already an Oracle?</h2>
-    <form action="/oracle-dashboard" method="POST">
-      <input type="text" name="account_id" placeholder="Enter your Oracle ID" required />
-      <br><br>
-      <input type="submit" value="Access Dashboard" />
+    <h2>🧾 Log in to Your Oracle Dashboard</h2>
+    <form action="/oracle-dashboard" method="GET">
+      <input type="text" name="account_id" placeholder="Enter Stripe Account ID" required />
+      <button type="submit">Enter</button>
     </form>
   </div>
 </body>

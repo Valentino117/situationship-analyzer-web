@@ -1,71 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Your Oracle Dashboard</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #fff8f3;
-      padding: 2rem;
       text-align: center;
-    }
-    .card {
-      background: #ffffff;
+      background-color: #fffaf6;
       padding: 2rem;
-      margin: 2rem auto;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 90%;
+      color: #333;
+    }
+    .section {
       max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    input, button {
+      padding: 0.5rem;
+      margin-top: 1rem;
+      font-size: 1rem;
     }
     button {
-      background-color: #9b4dca;
+      background-color: #9b59b6;
       color: white;
-      padding: 0.8rem 1.5rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 1rem;
     }
-    input[type="file"] {
+    a.payment-link {
+      display: inline-block;
       margin-top: 1rem;
+      font-weight: bold;
+      color: #2c3e50;
+      text-decoration: none;
+      background: #f3f3f3;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🔮 Welcome, Oracle</h1>
-    <p><strong>Your ID:</strong> {{ oracle_id }}</p>
-    <p><strong>Total Earned:</strong> ${{ oracle_data.earned }}</p>
-    <p><strongPlatform Fee Collected:</strong> ${{ oracle_data.platform_cut }}</p>
+  <h1>🔮 Welcome, {{ oracle_name or "Oracle" }}</h1>
 
-    <hr style="margin: 2rem 0;">
-
-    <form id="paymentForm">
-      <button type="submit">💸 Generate Payment Link</button>
+  <div class="section">
+    <h2>💸 Generate Payment Link</h2>
+    <form action="/generate-payment-link" method="POST">
+      <input type="hidden" name="account_id" value="{{ account_id }}">
+      <button type="submit">💰 Generate Payment Link</button>
     </form>
-
-    <div id="linkArea" style="margin-top: 1rem;"></div>
-
-    <hr style="margin: 2rem 0;">
-
-    <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
-      <input type="file" name="screenshots" multiple required>
-      <br><br>
-      <button type="submit">📤 Analyze Screenshots</button>
-    </form>
+    {% if payment_link %}
+      <p>Send this link to a friend:</p>
+      <a class="payment-link" href="{{ payment_link }}" target="_blank">Click here to copy the payment link</a>
+    {% endif %}
   </div>
 
-  <script>
-    const form = document.getElementById("paymentForm");
-    const linkArea = document.getElementById("linkArea");
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const response = await fetch("/generate-payment-link/{{ oracle_id }}", { method: "POST" });
-      const data = await response.json();
-      linkArea.innerHTML = `<p>Send this link to a friend: <a href="${data.url}" target="_blank">${data.url}</a></p>`;
-    };
-  </script>
+  <div class="section">
+    <h2>🖼️ Analyze a Situationship Screenshot</h2>
+    <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="account_id" value="{{ account_id }}">
+      <input type="file" name="screenshot" accept="image/*" required>
+      <br><br>
+      <button type="submit">✨ Analyze</button>
+    </form>
+    {% if analysis %}
+      <div style="margin-top: 2rem; text-align: left;">
+        <h3>📜 Oracle’s Wisdom:</h3>
+        <p>{{ analysis }}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>📈 Your Earnings</h2>
+    <p>Total earned: ${{ oracle_data.earned or 0 }}</p>
+    <p>Platform cut: ${{ oracle_data.platform_cut or 0 }}</p>
+  </div>
 </body>
 </html>
