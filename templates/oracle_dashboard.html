@@ -1,84 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Your Oracle Dashboard</title>
+  <meta charset="UTF-8" />
+  <title>Oracle Dashboard</title>
   <style>
     body {
       font-family: 'Helvetica Neue', sans-serif;
-      background: #fff7f5;
-      margin: 0;
-      padding: 2rem;
+      background: #fff8f5;
+      color: #333;
       text-align: center;
+      padding: 2rem;
     }
-    h1 {
-      color: #5e2ca5;
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 2rem auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    form {
-      margin: 2rem 0;
-    }
-    input[type="file"], input[type="text"] {
-      padding: 0.5rem;
+    input, button {
+      padding: 0.6rem 1rem;
       font-size: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 6px;
     }
     button {
-      background-color: #9b5de5;
+      background-color: #9146ff;
       color: white;
-      padding: 0.8rem 2rem;
-      font-size: 1rem;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
     }
-    .result {
+    .analysis {
       margin-top: 2rem;
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-style: italic;
+    }
+    .payment {
+      margin-top: 2rem;
+      font-weight: bold;
     }
     .link-box {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: #f0eaff;
-      border-radius: 6px;
-      font-size: 1rem;
+      margin-top: 1rem;
       word-break: break-word;
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
-  <h1>🔮 Oracle Dashboard</h1>
-  <p>Welcome, wise one. This is your sacred portal.</p>
+  <div class="container">
+    <h1>🔮 Oracle Dashboard</h1>
+    <p>You're logged in as: <strong>{{ account_id }}</strong></p>
 
-  <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="account_id" value="{{ account_id }}">
-    <p><strong>1. Upload your friend's situationship screenshot</strong></p>
-    <input type="file" name="screenshot" accept="image/*" required>
-    <br><br>
-    <button type="submit">🔍 Analyze Screenshot</button>
-  </form>
+    <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="account_id" value="{{ account_id }}">
+      <input type="file" name="screenshot" required><br>
+      <button type="submit">📜 Analyze Screenshot</button>
+    </form>
 
-  {% if analysis %}
-    <div class="result">
-      <h3>🧠 GPT's Analysis</h3>
-      <p>{{ analysis }}</p>
-    </div>
-  {% endif %}
+    {% if analysis %}
+      <div class="analysis">
+        <h3>Your Situationship Reading:</h3>
+        <p>{{ analysis }}</p>
+      </div>
 
-  <hr style="margin: 3rem 0;">
-
-  <form action="/generate-payment-link" method="POST">
-    <input type="hidden" name="account_id" value="{{ account_id }}">
-    <p><strong>2. Request payment from your friend</strong></p>
-    <button type="submit">💸 Generate Payment Link</button>
-  </form>
-
-  {% if payment_link %}
-    <div class="link-box">
-      <p><strong>Send this to your friend:</strong></p>
-      <a href="{{ payment_link }}" target="_blank">Click here to pay the Oracle</a>
-    </div>
-  {% endif %}
+      <div class="payment">
+        💸 Send this payment link to your friend:
+        <div class="link-box">
+          <a href="{{ payment_link }}" target="_blank">{{ payment_link }}</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 </body>
 </html>
