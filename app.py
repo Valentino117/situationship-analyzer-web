@@ -57,7 +57,7 @@ def oracle_analysis():
         image_data = image_file.read()
 
     response = openai.chat.completions.create(
-        model="gpt-4-vision-preview",
+        model="gpt-4o",
         messages=[
             {
                 "role": "system",
