@@ -2,144 +2,101 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Oracle Analyzer</title>
+  <title>Situationship Reading</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <style>
     body {
       margin: 0;
-      font-family: "Georgia", serif;
-      background: linear-gradient(to bottom right, #f6f0ff, #e5f2ff);
-      color: #2c2c2c;
-      text-align: center;
       padding: 2rem;
+      font-family: "Georgia", serif;
+      background: linear-gradient(to bottom right, #fdf1ff, #dbeaff);
+      color: #333;
+      text-align: center;
     }
 
-    h1, h2, h3, h4 {
-      color: #4b0082;
+    h1 {
+      color: #6a0dad;
+      margin-bottom: 1rem;
     }
 
     p {
       font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0.5rem auto 1.5rem auto;
+      max-width: 700px;
+      margin: 1rem auto;
+      line-height: 1.6;
     }
 
-    form {
-      background: #ffffffdd;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin: 2rem auto;
-      max-width: 600px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
-
-    input[type="file"], input[type="text"] {
-      padding: 0.5rem;
+    textarea {
       width: 90%;
-      margin-top: 0.5rem;
+      max-width: 700px;
+      height: 250px;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      background: #fffafc;
+      resize: none;
+      font-family: "Georgia", serif;
+      margin-top: 1rem;
+    }
+
+    input[type="file"],
+    input[type="text"],
+    button {
+      margin: 0.5rem auto;
+      padding: 0.7rem 1.3rem;
+      font-size: 1rem;
       border-radius: 6px;
+      border: none;
+      display: block;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid #aaa;
+      background: #ffffffdd;
     }
 
     button {
-      margin-top: 1rem;
       background-color: #6a0dad;
       color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
     button:hover {
       background-color: #4b0082;
     }
 
-    code {
-      display: block;
-      background: #f3f3f3;
-      padding: 0.5rem;
-      border-radius: 6px;
-      margin: 1rem auto;
-      font-size: 0.95rem;
-      color: #6a0dad;
-    }
-
-    canvas {
-      margin-top: 1rem;
-    }
-
-    .back-link {
-      display: block;
-      margin-top: 2rem;
-      font-size: 0.95rem;
-      color: #4b0082;
-      text-decoration: none;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: #999;
     }
   </style>
 </head>
 <body>
-  <h1>🔍 Step 2: Upload Screenshot and Charge Your Friend</h1>
-  <p>
-    Upload your friend's screenshot below to receive divine GPT-powered insight.
-    Then generate a payment link to charge them $1 for your wisdom.
-  </p>
 
-  <form action="" method="POST" enctype="multipart/form-data">
-    <h3>📸 Upload Screenshots</h3>
-    <input type="file" name="screenshots" accept="image/*" multiple required />
-    <br/>
-    <button type="submit">📜 Analyze Screenshot</button>
-  </form>
-
-  <form action="/generate-payment-link" method="POST">
-    <h3>💸 Generate Payment Link</h3>
-    <label for="oracle_id">Enter your Oracle ID:</label><br/>
-    <input type="text" name="oracle_id" required />
-    <br/>
-    <button type="submit">Generate Payment Link</button>
-  </form>
-
-  {% if payment_link %}
-    <h3>🔗 Your Payment Link</h3>
-    <code id="payment-link">{{ payment_link }}</code>
-    <button onclick="copyLink()">📋 Copy to Clipboard</button>
-
-    <div>
-      <h4>📱 Shareable QR Code</h4>
-      <canvas id="qrcode"></canvas>
-    </div>
-
-    <script>
-      function copyLink() {
-        const linkText = document.getElementById("payment-link").innerText;
-        navigator.clipboard.writeText(linkText).then(() => {
-          alert("Link copied to clipboard!");
-        });
-      }
-
-      QRCode.toCanvas(document.getElementById("qrcode"), document.getElementById("payment-link").innerText, { width: 200 });
-    </script>
-  {% endif %}
+  <h1>🔮 Oracle Insight</h1>
 
   {% if analysis %}
-    <h2>🧠 GPT’s Oracle Insight</h2>
-    <p style="white-space: pre-wrap;">{{ analysis }}</p>
-    <p style="color: #555; font-size: 0.9rem;">Copy and send this to your friend after they’ve paid.</p>
+    <p>Here's the divine reading based on your friend's text screenshot:</p>
+    <textarea readonly>{{ analysis }}</textarea>
+
+    {% if session_url %}
+      <p><strong>Now, send this link to your friend so they can pay you:</strong></p>
+      <p><a href="{{ session_url }}" target="_blank">{{ session_url }}</a></p>
+    {% endif %}
+  {% else %}
+    <p>Upload your friend’s text screenshot and enter your Oracle ID to receive your payment link.</p>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="screenshot" required />
+      <input type="text" name="oracle_id" placeholder="Your Oracle ID (starts with acct_...)" required />
+      <button type="submit">🧠 Analyze & Generate Payment Link</button>
+    </form>
   {% endif %}
 
-  {% if extracted_text %}
-    <h3>📄 Extracted Text</h3>
-    <p style="white-space: pre-wrap; color: #444;">{{ extracted_text }}</p>
-  {% endif %}
-
-  <a href="/" class="back-link">⬅️ Back to Homepage</a>
+  <p class="footer">✨ Powered by GPT-4 and Stripe Connect</p>
 </body>
 </html>

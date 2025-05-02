@@ -2,27 +2,56 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>You're an Oracle!</title>
+  <title>You're Now an Oracle!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Georgia", serif;
+      background: linear-gradient(to bottom right, #f6f0ff, #e5f2ff);
+      color: #333;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    h1 {
+      color: #6a0dad;
+      font-size: 2.2rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 1rem auto;
+      max-width: 600px;
+    }
+
+    button {
+      margin-top: 2rem;
+      padding: 0.8rem 1.5rem;
+      background-color: #6a0dad;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #4b0082;
+    }
+  </style>
 </head>
-<body style="font-family: serif; text-align: center; padding: 2rem;">
-  <h1>✨ You’re Now a Situationship Oracle!</h1>
-  <p style="max-width: 600px; margin: 1rem auto; font-size: 1.1rem;">
-    You can now receive payments from your friends to decode their most confusing situationship texts.
-    Here’s your personal payment link — send this to your friend after they share a screenshot.
+<body>
+  <h1>✨ Welcome, Oracle!</h1>
+  <p>
+    You're now officially a Situationship Oracle. Your friends will send you screenshots of confusing texts,
+    and you'll use the AI Oracle to interpret them — in exchange for money.
   </p>
-
-  {% if account_id %}
-    <p><strong>Share this link:</strong></p>
-    <code style="display: block; margin: 1rem auto; font-size: 1rem;">
-      https://situationship-analyzer-web.onrender.com/pay/{{ account_id }}
-    </code>
-  {% endif %}
-
-  <p>Once they pay, go here to analyze their screenshot and get GPT-powered insights:</p>
-  <a href="/oracle-analysis" style="font-size: 1.1rem;">🔮 Analyze Screenshot</a>
-
-  <p style="margin-top: 2rem;">
-    <a href="/" style="font-size: 1rem;">⬅️ Back to Homepage</a>
+  <p>
+    Upload a screenshot below and generate GPT’s divine insight. You’ll then receive a payment link you can send to your friend.
   </p>
+  <form action="/oracle-analysis" method="GET">
+    <button>🔮 Start Your First Reading</button>
+  </form>
 </body>
 </html>

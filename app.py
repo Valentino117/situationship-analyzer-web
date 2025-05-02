@@ -61,7 +61,53 @@ def create_oracle_account():
 
 @app.route("/oracle-success")
 def oracle_success():
-    return "✨ You're now an Oracle! You can receive payments."
+    return render_template("oracle_success.html")
+
+@app.route('/oracle-analysis', methods=['GET', 'POST'])
+def oracle_analysis():
+    if request.method == 'POST':
+        screenshot = request.files['screenshot']
+        oracle_id = request.form['oracle_id']
+
+        image = Image.open(screenshot.stream)
+        text = pytesseract.image_to_string(image)
+
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a wise oracle. Give your insight about this relationship situation."},
+                {"role": "user", "content": text}
+            ]
+        )
+
+        analysis = response.choices[0].message.content
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": "Situationship Reading"
+                    },
+                    "unit_amount": 100,
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            payment_intent_data={
+                "application_fee_amount": 10,
+                "transfer_data": {
+                    "destination": oracle_id
+                }
+            },
+            success_url="https://situationship-analyzer-web.onrender.com",
+            cancel_url="https://situationship-analyzer-web.onrender.com",
+        )
+
+        return render_template("oracle_analysis.html", analysis=analysis, session_url=session.url)
+
+    return render_template("oracle_analysis.html")
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
