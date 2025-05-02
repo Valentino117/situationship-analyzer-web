@@ -2,6 +2,7 @@ import os
 import openai
 import stripe
 import json
+import base64
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
@@ -69,7 +70,8 @@ def oracle_analysis():
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{image_data.encode('base64').decode()}"
+                            "url": f"data:image/jpeg;base64,{base64.b64encode(image_data).decode()}"
+
                         }
                     }
                 ]
