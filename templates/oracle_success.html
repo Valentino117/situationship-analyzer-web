@@ -1,57 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>You're Now an Oracle!</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>You're Now an Oracle</title>
   <style>
     body {
-      margin: 0;
-      font-family: "Georgia", serif;
-      background: linear-gradient(to bottom right, #f6f0ff, #e5f2ff);
-      color: #333;
+      font-family: 'Georgia', serif;
       text-align: center;
+      background: #fdf6f0;
       padding: 3rem;
+      color: #333;
     }
-
     h1 {
-      color: #6a0dad;
-      font-size: 2.2rem;
+      color: #9b4dca;
+      font-size: 2rem;
     }
-
-    p {
-      font-size: 1.2rem;
-      margin: 1rem auto;
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 2rem;
+      margin: 2rem auto;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
       max-width: 600px;
     }
-
     button {
-      margin-top: 2rem;
-      padding: 0.8rem 1.5rem;
-      background-color: #6a0dad;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background: #9b4dca;
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 1rem;
+      border-radius: 8px;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: #4b0082;
+    input[type="file"] {
+      margin: 1rem 0;
     }
   </style>
 </head>
 <body>
-  <h1>✨ Welcome, Oracle!</h1>
-  <p>
-    You're now officially a Situationship Oracle. Your friends will send you screenshots of confusing texts,
-    and you'll use the AI Oracle to interpret them — in exchange for money.
-  </p>
-  <p>
-    Upload a screenshot below and generate GPT’s divine insight. You’ll then receive a payment link you can send to your friend.
-  </p>
-  <form action="/oracle-analysis" method="GET">
-    <button>🔮 Start Your First Reading</button>
-  </form>
+  <div class="card">
+    <h1>✨ Welcome, Oracle!</h1>
+    <p>You can now receive payments to analyze situationship screenshots.</p>
+    <p>Upload a screenshot from a friend to receive divine guidance from GPT, then charge your friend accordingly.</p>
+
+    <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
+      <input type="file" name="screenshots" multiple required>
+      <br>
+      <button type="submit">🔍 Analyze Screenshot(s)</button>
+    </form>
+  </div>
 </body>
 </html>

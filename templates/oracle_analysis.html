@@ -1,102 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Situationship Reading</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Oracle's Reading</title>
   <style>
     body {
-      margin: 0;
-      padding: 2rem;
-      font-family: "Georgia", serif;
-      background: linear-gradient(to bottom right, #fdf1ff, #dbeaff);
-      color: #333;
+      font-family: 'Georgia', serif;
       text-align: center;
+      background: #fdf6f0;
+      padding: 2rem;
+      color: #333;
     }
-
     h1 {
-      color: #6a0dad;
-      margin-bottom: 1rem;
+      color: #9b4dca;
     }
-
-    p {
-      font-size: 1.1rem;
-      max-width: 700px;
-      margin: 1rem auto;
-      line-height: 1.6;
-    }
-
-    textarea {
+    .analysis {
+      margin-top: 2rem;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       width: 90%;
       max-width: 700px;
-      height: 250px;
-      padding: 1rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      background: #fffafc;
-      resize: none;
-      font-family: "Georgia", serif;
-      margin-top: 1rem;
-    }
-
-    input[type="file"],
-    input[type="text"],
-    button {
-      margin: 0.5rem auto;
-      padding: 0.7rem 1.3rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-      display: block;
-    }
-
-    input[type="file"],
-    input[type="text"] {
-      width: 90%;
-      max-width: 400px;
-      border: 1px solid #aaa;
-      background: #ffffffdd;
-    }
-
-    button {
-      background-color: #6a0dad;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #4b0082;
-    }
-
-    .footer {
-      margin-top: 3rem;
-      font-size: 0.9rem;
-      color: #999;
+      margin-left: auto;
+      margin-right: auto;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
+  <h1>📜 The Oracle Speaks</h1>
+  <p>This is the insight you've received from the uploaded situationship texts.</p>
 
-  <h1>🔮 Oracle Insight</h1>
+  <div class="analysis">
+    {{ analysis }}
+  </div>
 
-  {% if analysis %}
-    <p>Here's the divine reading based on your friend's text screenshot:</p>
-    <textarea readonly>{{ analysis }}</textarea>
-
-    {% if session_url %}
-      <p><strong>Now, send this link to your friend so they can pay you:</strong></p>
-      <p><a href="{{ session_url }}" target="_blank">{{ session_url }}</a></p>
-    {% endif %}
-  {% else %}
-    <p>Upload your friend’s text screenshot and enter your Oracle ID to receive your payment link.</p>
-    <form method="POST" enctype="multipart/form-data">
-      <input type="file" name="screenshot" required />
-      <input type="text" name="oracle_id" placeholder="Your Oracle ID (starts with acct_...)" required />
-      <button type="submit">🧠 Analyze & Generate Payment Link</button>
-    </form>
-  {% endif %}
-
-  <p class="footer">✨ Powered by GPT-4 and Stripe Connect</p>
+  <p style="margin-top: 2rem;">
+    💸 Share this divine wisdom with your friend in exchange for payment.
+  </p>
 </body>
 </html>

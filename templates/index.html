@@ -3,95 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <title>Situationship Oracle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      margin: 0;
-      font-family: "Georgia", serif;
-      background: linear-gradient(to bottom right, #f6f0ff, #e5f2ff);
-      color: #2c2c2c;
+      font-family: 'Georgia', serif;
       text-align: center;
       padding: 2rem;
+      background: #fdf6f0;
+      color: #333;
     }
-
     h1, h2 {
-      color: #4b0082;
+      color: #9b4dca;
     }
-
-    p {
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0.5rem auto 1.5rem auto;
-    }
-
     .oracle-card {
-      background: #ffffffdd;
-      border-radius: 12px;
-      padding: 1.5rem;
+      border: 1px solid #ddd;
+      background: #fff;
+      padding: 1rem;
       margin: 1rem auto;
-      max-width: 600px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-
     button {
-      background-color: #6a0dad;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background: #9b4dca;
       color: white;
       border: none;
-      border-radius: 6px;
-      padding: 0.6rem 1.3rem;
-      font-size: 1rem;
+      border-radius: 8px;
       cursor: pointer;
+    }
+    input[type="file"] {
       margin-top: 1rem;
-    }
-
-    button:hover {
-      background-color: #4b0082;
-    }
-
-    code {
-      display: inline-block;
-      background: #f3f3f3;
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
-      color: #6a0dad;
-      font-size: 0.9rem;
-    }
-
-    .footer {
-      margin-top: 4rem;
-      font-size: 0.9rem;
-      color: #999;
     }
   </style>
 </head>
 <body>
-  <h1>🔮 Become a Situationship Oracle</h1>
-  <p>
-    Upload your friends' confusing texts. Let GPT decode them. Get paid.
-  </p>
+  <h1>🔮 Situationship Oracle</h1>
+  <p>Analyze your friends' situationship texts and get paid for your wisdom.</p>
 
   <form action="/create-oracle-account" method="GET">
     <button>✨ Become an Oracle</button>
   </form>
 
-  <h2 style="margin-top: 3rem;">🧙 Active Oracles & Earnings</h2>
+  <h2>Upload screenshots for analysis</h2>
+  <p>See what the oracle sees. Drop in screenshots from your text exchanges and receive divine interpretation.</p>
+  <form action="/" method="POST" enctype="multipart/form-data">
+    <input type="file" name="screenshots" multiple required>
+    <br><br>
+    <button type="submit">🔍 Analyze Screenshot(s)</button>
+  </form>
 
+  {% if analysis %}
+    <div style="margin-top: 2rem;">
+      <h2>📜 Oracle's Reading</h2>
+      <pre style="white-space: pre-wrap;">{{ analysis }}</pre>
+    </div>
+  {% endif %}
+
+  <h2 style="margin-top: 3rem;">💼 Active Oracles</h2>
   {% if oracles %}
     {% for id, data in oracles.items() %}
       <div class="oracle-card">
-        <h3>{{ data.name or "Unnamed Oracle" }}</h3>
-        <p><strong>Oracle ID:</strong> <code>{{ id }}</code></p>
-        <p>💰 Earned: ${{ "%.2f"|format(data.earned) }}</p>
-        <p>🏛️ Platform Cut: ${{ "%.2f"|format(data.platform_cut) }}</p>
-        <form action="/pay/{{ id }}" method="POST">
-          <button>💸 Pay this Oracle</button>
-        </form>
+        <strong>{{ data.name or 'Oracle ' ~ loop.index }}</strong><br/>
+        Total earned: ${{ '%.2f' % data.earned }}<br/>
+        Platform cut: ${{ '%.2f' % data.platform_cut }}
       </div>
     {% endfor %}
   {% else %}
-    <p>No oracles yet — be the first to offer divine wisdom.</p>
+    <p>No oracles yet — be the first!</p>
   {% endif %}
-
-  <p class="footer">Built with 💜 GPT + Stripe Connect</p>
 </body>
 </html>
