@@ -66,12 +66,40 @@
       </div>
 
       <div class="payment">
-        💸 Send this payment link to your friend:
-        <div class="link-box">
-          <a href="{{ payment_link }}" target="_blank">{{ payment_link }}</a>
-        </div>
+        <h3>💸 Send this payment link to your friend:</h3>
+
+        <!-- Copyable link input -->
+        <input type="text" value="{{ payment_link }}" id="paymentLink" readonly style="width: 80%; padding: 0.5rem; margin-bottom: 1rem;">
+        <br>
+        <button onclick="copyLink()" style="padding: 0.5rem 1rem; background-color: #8e44ad; color: white; border: none; border-radius: 5px;">
+          📋 Copy Payment Link
+        </button>
+
+        <!-- QR Code Container -->
+        <div id="qrcode" style="margin-top: 1.5rem;"></div>
       </div>
     {% endif %}
   </div>
+
+  <!-- QR Code Generator + Copy Script -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+  <script>
+    function copyLink() {
+      const copyText = document.getElementById("paymentLink");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); // For mobile
+      document.execCommand("copy");
+      alert("Payment link copied to clipboard!");
+    }
+
+    const link = document.getElementById("paymentLink")?.value;
+    if (link) {
+      QRCode.toCanvas(document.getElementById('qrcode'), link, function (error) {
+        if (error) console.error(error);
+      });
+    }
+  </script>
 </body>
+</html>
+
 </html>
