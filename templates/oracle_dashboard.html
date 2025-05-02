@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Your Oracle Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff8f3;
+      padding: 2rem;
+      text-align: center;
+    }
+    .card {
+      background: #ffffff;
+      padding: 2rem;
+      margin: 2rem auto;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 600px;
+    }
+    button {
+      background-color: #9b4dca;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    input[type="file"] {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔮 Welcome, Oracle</h1>
+    <p><strong>Your ID:</strong> {{ oracle_id }}</p>
+    <p><strong>Total Earned:</strong> ${{ oracle_data.earned }}</p>
+    <p><strongPlatform Fee Collected:</strong> ${{ oracle_data.platform_cut }}</p>
+
+    <hr style="margin: 2rem 0;">
+
+    <form id="paymentForm">
+      <button type="submit">💸 Generate Payment Link</button>
+    </form>
+
+    <div id="linkArea" style="margin-top: 1rem;"></div>
+
+    <hr style="margin: 2rem 0;">
+
+    <form action="/oracle-analysis" method="POST" enctype="multipart/form-data">
+      <input type="file" name="screenshots" multiple required>
+      <br><br>
+      <button type="submit">📤 Analyze Screenshots</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("paymentForm");
+    const linkArea = document.getElementById("linkArea");
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const response = await fetch("/generate-payment-link/{{ oracle_id }}", { method: "POST" });
+      const data = await response.json();
+      linkArea.innerHTML = `<p>Send this link to a friend: <a href="${data.url}" target="_blank">${data.url}</a></p>`;
+    };
+  </script>
+</body>
+</html>
