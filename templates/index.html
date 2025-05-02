@@ -3,25 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <title>Situationship Oracle</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      text-align: center;
+      padding: 2rem;
+      background-color: #f9f5f0;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background-color: #5e4b8b;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #483375;
+    }
+
+    .oracle-box {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin: 1rem auto;
+      padding: 1rem;
+      width: 300px;
+    }
+
+    .subtle {
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 2rem;">
+<body>
   <h1>🔮 The Situationship Oracle</h1>
 
-  <form action="/onboard-oracle" method="GET">
-    <button type="submit" style="padding: 1rem 2rem; font-size: 1rem;">
+  <form action="/create-oracle-account" method="GET">
+    <button type="submit">
       🧙 Become an Oracle
     </button>
   </form>
 
-  <h2 style="margin-top: 3rem;">Active Oracles</h2>
+  <h2 style="margin-top: 3rem;">The Oracle’s Oracles</h2>
 
   {% if oracles %}
-    {% for id in oracles %}
-      <div style="margin-bottom: 1.5rem;">
+    {% for id, data in oracles.items() %}
+      <div class="oracle-box">
         <strong>Oracle {{ loop.index }}</strong><br/>
-        ID: {{ id }}<br/>
+        <span class="subtle">Stripe ID: {{ id }}</span><br/><br/>
+        <strong>Earnings:</strong> ${{ "%.2f"|format(data.earned) }}<br/>
+        <strong>Platform Cut:</strong> ${{ "%.2f"|format(data.platform_cut) }}<br/><br/>
         <form action="/pay/{{ id }}" method="POST">
-          <button style="margin-top: 0.5rem; padding: 0.5rem 1rem;">💸 Pay this Oracle</button>
+          <button>💸 Pay this Oracle</button>
         </form>
       </div>
     {% endfor %}
