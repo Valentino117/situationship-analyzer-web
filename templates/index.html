@@ -3,74 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <title>Situationship Oracle</title>
-  <style>
-    body {
-      font-family: 'Helvetica Neue', sans-serif;
-      text-align: center;
-      padding: 2rem;
-      background-color: #f9f5f0;
-      color: #333;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-
-    button {
-      background-color: #5e4b8b;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #483375;
-    }
-
-    .oracle-box {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      margin: 1rem auto;
-      padding: 1rem;
-      width: 300px;
-    }
-
-    .subtle {
-      font-size: 0.85rem;
-      color: #666;
-    }
-  </style>
 </head>
-<body>
-  <h1>🔮 The Situationship Oracle</h1>
+<body style="font-family: sans-serif; text-align: center; padding: 2rem;">
+  <h1>💬 Analyze Your Friends’ Situationship Texts — and Get Paid</h1>
+  <p style="max-width: 600px; margin: 1rem auto; font-size: 1.1rem;">
+    Become a Situationship Oracle: your friends send you their confusing texts,
+    and you give them GPT-powered insight — for $1 a reading.
+  </p>
 
   <form action="/create-oracle-account" method="GET">
-    <button type="submit">
-      🧙 Become an Oracle
+    <button type="submit" style="padding: 1rem 2rem; font-size: 1rem; margin-top: 1rem;">
+      🔥 Become an Oracle Now
     </button>
   </form>
 
-  <h2 style="margin-top: 3rem;">The Oracle’s Oracles</h2>
+  <hr style="margin: 3rem auto; width: 60%;" />
+
+  <h2>🧙‍♀️ Active Oracles</h2>
+  <p style="color: gray; margin-bottom: 2rem;">
+    These oracles are ready to be paid for insights.
+  </p>
 
   {% if oracles %}
-    {% for id, data in oracles.items() %}
-      <div class="oracle-box">
+    {% for id in oracles %}
+      <div style="margin-bottom: 2rem;">
         <strong>Oracle {{ loop.index }}</strong><br/>
-        <span class="subtle">Stripe ID: {{ id }}</span><br/><br/>
-        <strong>Earnings:</strong> ${{ "%.2f"|format(data.earned) }}<br/>
-        <strong>Platform Cut:</strong> ${{ "%.2f"|format(data.platform_cut) }}<br/><br/>
+        Oracle ID: <code>{{ id }}</code><br/>
         <form action="/pay/{{ id }}" method="POST">
-          <button>💸 Pay this Oracle</button>
+          <button style="margin-top: 0.5rem; padding: 0.5rem 1rem;">💸 Pay this Oracle $1</button>
         </form>
       </div>
     {% endfor %}
   {% else %}
-    <p>No oracles yet — be the first!</p>
+    <p>No oracles yet — be the first to sign up.</p>
   {% endif %}
 </body>
 </html>
