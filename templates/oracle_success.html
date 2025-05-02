@@ -5,18 +5,24 @@
   <title>You're an Oracle!</title>
 </head>
 <body style="font-family: serif; text-align: center; padding: 2rem;">
-  <h1>✨ You're now an Oracle! You can receive payments. ✨</h1>
+  <h1>✨ You’re Now a Situationship Oracle!</h1>
+  <p style="max-width: 600px; margin: 1rem auto; font-size: 1.1rem;">
+    You can now receive payments from your friends to decode their most confusing situationship texts.
+    Here’s your personal payment link — send this to your friend after they share a screenshot.
+  </p>
 
   {% if account_id %}
-    <p>This is your Oracle ID:</p>
-    <code>{{ account_id }}</code>
-
-    <p>To let others pay you for situationship readings, share this payment link:</p>
-    <code>https://situationship-analyzer-web.onrender.com/pay/{{ account_id }}</code>
-
-    <p style="margin-top: 2rem;">
-      <a href="/" style="font-size: 1.2rem;">🔙 Back to Homepage</a>
-    </p>
+    <p><strong>Share this link:</strong></p>
+    <code style="display: block; margin: 1rem auto; font-size: 1rem;">
+      https://situationship-analyzer-web.onrender.com/pay/{{ account_id }}
+    </code>
   {% endif %}
+
+  <p>Once they pay, go here to analyze their screenshot and get GPT-powered insights:</p>
+  <a href="/oracle-analysis" style="font-size: 1.1rem;">🔮 Analyze Screenshot</a>
+
+  <p style="margin-top: 2rem;">
+    <a href="/" style="font-size: 1rem;">⬅️ Back to Homepage</a>
+  </p>
 </body>
 </html>

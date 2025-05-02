@@ -5,23 +5,31 @@
   <title>Oracle Analyzer</title>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding: 2rem;">
-  <h1>🔍 Oracle Analysis Portal</h1>
-  <p>Upload the user's screenshot below to receive divine insight.</p>
+  <h1>🔍 Step 2: Analyze Their Screenshot</h1>
+  <p style="max-width: 600px; margin: 1rem auto; font-size: 1.1rem;">
+    After your friend pays you and sends their situationship screenshot, upload it here.
+    We’ll extract the text and give you divine insight — ready to send back.
+  </p>
 
   <form action="" method="POST" enctype="multipart/form-data">
     <input type="file" name="screenshots" accept="image/*" multiple required />
     <br/><br/>
-    <button type="submit" style="padding: 1rem 2rem;">📜 Analyze</button>
+    <button type="submit" style="padding: 1rem 2rem;">📜 Analyze Screenshot</button>
   </form>
 
   {% if analysis %}
-    <h2>🔮 Oracle's Insight</h2>
+    <h2>🧠 GPT’s Oracle Insight</h2>
     <p style="white-space: pre-wrap; margin-top: 1rem;">{{ analysis }}</p>
+    <p style="color: gray; font-size: 0.9rem;">You can copy and paste this into a message back to your friend.</p>
   {% endif %}
 
   {% if extracted_text %}
-    <h3>🖼 Extracted Text</h3>
+    <h3>📄 Extracted Text from Screenshot</h3>
     <p style="white-space: pre-wrap; color: gray;">{{ extracted_text }}</p>
   {% endif %}
+
+  <p style="margin-top: 2rem;">
+    <a href="/" style="font-size: 1rem;">⬅️ Back to Homepage</a>
+  </p>
 </body>
 </html>
