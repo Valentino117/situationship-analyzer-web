@@ -1,8 +1,3 @@
-# Here's the full updated `app.py` with support for:
-# - Screenshot analysis via OpenAI
-# - Oracle onboarding via Stripe Connect
-# - Stripe webhook to track oracle earnings
-
 from flask import Flask, render_template, request, redirect, jsonify
 from PIL import Image
 import pytesseract
@@ -66,7 +61,30 @@ def create_oracle_account():
 
 @app.route("/oracle-success")
 def oracle_success():
-    return "✨ You're now an Oracle! You can receive payments."
+    return redirect("/oracle-analysis")
+
+@app.route("/oracle-analysis", methods=["GET", "POST"])
+def oracle_analysis():
+    if request.method == "POST" and 'screenshots' in request.files:
+        files = request.files.getlist('screenshots')
+        all_text = ""
+
+        for file in files:
+            image = Image.open(file.stream)
+            text = pytesseract.image_to_string(image)
+            all_text += text + "\n\n"
+
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a wise, perceptive, emotionally intelligent oracle. Decode the meaning behind these screenshots and explain the emotional truth of what the user is experiencing in this situationship."},
+                {"role": "user", "content": all_text}
+            ]
+        )
+        analysis = response.choices[0].message.content
+        return render_template("oracle_analysis.html", analysis=analysis, extracted_text=all_text)
+
+    return render_template("oracle_analysis.html")
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
@@ -102,6 +120,30 @@ def stripe_webhook():
                 json.dump(oracles, f, indent=2)
 
     return jsonify({'status': 'success'}), 200
+
+@app.route('/pay/<oracle_id>', methods=['POST'])
+def pay_oracle(oracle_id):
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'unit_amount': 100,
+                'product_data': {'name': 'Situationship Reading'},
+            },
+            'quantity': 1,
+        }],
+        mode="payment",
+        success_url="https://situationship-analyzer-web.onrender.com",
+        cancel_url="https://situationship-analyzer-web.onrender.com",
+        payment_intent_data={
+            "on_behalf_of": oracle_id,
+            "transfer_data": {
+                "destination": oracle_id
+            }
+        }
+    )
+    return redirect(session.url, code=303)
 
 if __name__ == '__main__':
     app.run(debug=True)

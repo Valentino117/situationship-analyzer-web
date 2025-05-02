@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Oracle Analyzer</title>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding: 2rem;">
+  <h1>🔍 Oracle Analysis Portal</h1>
+  <p>Upload the user's screenshot below to receive divine insight.</p>
+
+  <form action="" method="POST" enctype="multipart/form-data">
+    <input type="file" name="screenshots" accept="image/*" multiple required />
+    <br/><br/>
+    <button type="submit" style="padding: 1rem 2rem;">📜 Analyze</button>
+  </form>
+
+  {% if analysis %}
+    <h2>🔮 Oracle's Insight</h2>
+    <p style="white-space: pre-wrap; margin-top: 1rem;">{{ analysis }}</p>
+  {% endif %}
+
+  {% if extracted_text %}
+    <h3>🖼 Extracted Text</h3>
+    <p style="white-space: pre-wrap; color: gray;">{{ extracted_text }}</p>
+  {% endif %}
+</body>
+</html>
