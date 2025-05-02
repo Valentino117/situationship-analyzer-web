@@ -24,11 +24,11 @@
       margin: 0.5rem auto 1.5rem auto;
     }
 
-    .oracle-section {
+    .oracle-card {
       background: #ffffffdd;
       border-radius: 12px;
-      padding: 2rem;
-      margin: 2rem auto;
+      padding: 1.5rem;
+      margin: 1rem auto;
       max-width: 600px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
@@ -38,10 +38,10 @@
       color: white;
       border: none;
       border-radius: 6px;
-      padding: 0.8rem 1.5rem;
+      padding: 0.6rem 1.3rem;
       font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin-top: 1rem;
     }
 
     button:hover {
@@ -55,7 +55,6 @@
       border-radius: 6px;
       color: #6a0dad;
       font-size: 0.9rem;
-      margin-top: 0.2rem;
     }
 
     .footer {
@@ -68,33 +67,31 @@
 <body>
   <h1>🔮 Become a Situationship Oracle</h1>
   <p>
-    Confused texts. Mixed signals. Emotional chaos. <br/>
-    As a certified Situationship Oracle, you can upload your friends' screenshots, let GPT analyze them, and get paid $1 per reading.
+    Upload your friends' confusing texts. Let GPT decode them. Get paid.
   </p>
 
   <form action="/create-oracle-account" method="GET">
     <button>✨ Become an Oracle</button>
   </form>
 
-  <div class="oracle-section">
-    <h2>🧙‍♀️ Active Oracles</h2>
-    <p>These oracles are available and earning.</p>
+  <h2 style="margin-top: 3rem;">🧙 Active Oracles & Earnings</h2>
 
-    {% if oracles %}
-      {% for id in oracles %}
-        <div style="margin-bottom: 2rem;">
-          <strong>Oracle {{ loop.index }}</strong><br/>
-          ID: <code>{{ id }}</code><br/>
-          <form action="/pay/{{ id }}" method="POST">
-            <button style="margin-top: 0.5rem;">💸 Pay this Oracle $1</button>
-          </form>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>No oracles yet — be the first!</p>
-    {% endif %}
-  </div>
+  {% if oracles %}
+    {% for id, data in oracles.items() %}
+      <div class="oracle-card">
+        <h3>{{ data.name or "Unnamed Oracle" }}</h3>
+        <p><strong>Oracle ID:</strong> <code>{{ id }}</code></p>
+        <p>💰 Earned: ${{ "%.2f"|format(data.earned) }}</p>
+        <p>🏛️ Platform Cut: ${{ "%.2f"|format(data.platform_cut) }}</p>
+        <form action="/pay/{{ id }}" method="POST">
+          <button>💸 Pay this Oracle</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No oracles yet — be the first to offer divine wisdom.</p>
+  {% endif %}
 
-  <p class="footer">Made with 💜 and GPT</p>
+  <p class="footer">Built with 💜 GPT + Stripe Connect</p>
 </body>
 </html>

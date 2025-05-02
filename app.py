@@ -61,30 +61,7 @@ def create_oracle_account():
 
 @app.route("/oracle-success")
 def oracle_success():
-    return redirect("/oracle-analysis")
-
-@app.route("/oracle-analysis", methods=["GET", "POST"])
-def oracle_analysis():
-    if request.method == "POST" and 'screenshots' in request.files:
-        files = request.files.getlist('screenshots')
-        all_text = ""
-
-        for file in files:
-            image = Image.open(file.stream)
-            text = pytesseract.image_to_string(image)
-            all_text += text + "\n\n"
-
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a wise, perceptive, emotionally intelligent oracle. Decode the meaning behind these screenshots and explain the emotional truth of what the user is experiencing in this situationship."},
-                {"role": "user", "content": all_text}
-            ]
-        )
-        analysis = response.choices[0].message.content
-        return render_template("oracle_analysis.html", analysis=analysis, extracted_text=all_text)
-
-    return render_template("oracle_analysis.html")
+    return "✨ You're now an Oracle! You can receive payments."
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
@@ -103,15 +80,23 @@ def stripe_webhook():
         amount = charge['amount']
         connected_account_id = charge.get('on_behalf_of') or charge.get('destination')
 
-        try:
-            with open('oracles.json', 'r') as f:
-                oracles = json.load(f)
-        except FileNotFoundError:
-            oracles = {}
-
         if connected_account_id:
+            try:
+                with open('oracles.json', 'r') as f:
+                    oracles = json.load(f)
+            except FileNotFoundError:
+                oracles = {}
+
+            # Fetch name from Stripe if not stored
             if connected_account_id not in oracles:
-                oracles[connected_account_id] = {'earned': 0, 'platform_cut': 0}
+                acct_info = stripe.Account.retrieve(connected_account_id)
+                name = acct_info.get("business_profile", {}).get("name") or \
+                       acct_info.get("individual", {}).get("first_name", "Unknown Oracle")
+                oracles[connected_account_id] = {
+                    "name": name,
+                    "earned": 0.0,
+                    "platform_cut": 0.0
+                }
 
             oracles[connected_account_id]['earned'] += amount / 100
             oracles[connected_account_id]['platform_cut'] += round((amount / 100) * 0.1, 2)
@@ -120,30 +105,6 @@ def stripe_webhook():
                 json.dump(oracles, f, indent=2)
 
     return jsonify({'status': 'success'}), 200
-
-@app.route('/pay/<oracle_id>', methods=['POST'])
-def pay_oracle(oracle_id):
-    session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        line_items=[{
-            'price_data': {
-                'currency': 'usd',
-                'unit_amount': 100,
-                'product_data': {'name': 'Situationship Reading'},
-            },
-            'quantity': 1,
-        }],
-        mode="payment",
-        success_url="https://situationship-analyzer-web.onrender.com",
-        cancel_url="https://situationship-analyzer-web.onrender.com",
-        payment_intent_data={
-            "on_behalf_of": oracle_id,
-            "transfer_data": {
-                "destination": oracle_id
-            }
-        }
-    )
-    return redirect(session.url, code=303)
 
 if __name__ == '__main__':
     app.run(debug=True)
