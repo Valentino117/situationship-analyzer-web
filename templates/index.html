@@ -2,58 +2,50 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>The Situationship Oracle</title>
+  <title>Situationship Oracle</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background: #fffaf6;
-      padding: 2rem;
-      color: #333;
-    }
-    button {
+    body { font-family: sans-serif; background: #f9f7f6; padding: 2rem; text-align: center; color: #333; }
+    h1 { color: #6b2b82; }
+    button, input[type="file"], input[type="text"] {
+      margin: 1rem 0;
       padding: 0.75rem 1.5rem;
-      background-color: #9b59b6;
-      color: white;
-      border: none;
       font-size: 1rem;
-      border-radius: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #6b2b82;
+      color: white;
       cursor: pointer;
     }
-    input {
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    .card {
-      border: 1px solid #eee;
-      padding: 1rem;
-      margin: 2rem auto;
-      max-width: 500px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
+    .oracle-box { background: white; border-radius: 8px; padding: 1rem; margin: 1rem auto; max-width: 400px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .input-section { margin-top: 2rem; }
   </style>
 </head>
 <body>
-  <h1>🔮 The Situationship Oracle</h1>
-  <p style="max-width: 600px; margin: auto;">
-    Give advice on your friends' situationship texts. Get paid.
-  </p>
+  <h1>🔮 Situationship Oracle</h1>
+  <p>Give advice on your friends' situationship texts. Get paid.</p>
 
-  <div class="card">
-    <h2>🧙 Become an Oracle</h2>
-    <form action="/onboard-oracle" method="GET">
-      <button type="submit">Start Onboarding</button>
-    </form>
-  </div>
+  <form action="/create-oracle-account" method="GET">
+    <button type="submit">🧙 Become an Oracle</button>
+  </form>
 
-  <div class="card">
-    <h2>🧾 Log in to Your Oracle Dashboard</h2>
+  <div class="input-section">
     <form action="/oracle-dashboard" method="GET">
       <input type="text" name="account_id" placeholder="Enter Stripe Account ID" required />
-      <button type="submit">Enter</button>
+      <button type="submit">Access Oracle Dashboard</button>
     </form>
   </div>
+
+  <h2>🧙‍♀️ Active Oracles</h2>
+  {% if oracles %}
+    {% for id, data in oracles.items() %}
+      <div class="oracle-box">
+        <strong>{{ data.name }}</strong><br/>
+        Total Earned: ${{ data.earned }}<br/>
+        Platform Cut: ${{ data.platform_cut }}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No oracles yet — be the first!</p>
+  {% endif %}
 </body>
 </html>
