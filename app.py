@@ -30,14 +30,15 @@ def create_oracle_account():
     account_link = stripe.AccountLink.create(
         account=account.id,
         refresh_url=url_for('index', _external=True),
-        return_url=url_for('oracle_success', _external=True),
+        return_url=f"https://situationship-analyzer-web.onrender.com/oracle-success?account_id={account.id}",
         type="account_onboarding"
     )
     return redirect(account_link.url)
 
 @app.route('/oracle-success')
 def oracle_success():
-    return render_template('oracle_success.html')
+    account_id = request.args.get("account_id")
+    return redirect(f"/oracle-dashboard?account_id={account_id}")
 
 @app.route('/oracle-dashboard')
 def oracle_dashboard():
