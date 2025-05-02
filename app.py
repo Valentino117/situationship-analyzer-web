@@ -41,7 +41,7 @@ def oracle_success():
 @app.route('/oracle-dashboard')
 def oracle_dashboard():
     account_id = request.args.get('account_id')
-    return render_template('dashboard.html', account_id=account_id)
+    return render_template('oracle_dashboard.html', account_id=account_id)
 
 @app.route('/oracle-analysis', methods=['POST'])
 def oracle_analysis():
@@ -99,7 +99,7 @@ def oracle_analysis():
         cancel_url='https://situationship-analyzer-web.onrender.com',
     )
 
-    return render_template('dashboard.html', account_id=account_id, analysis=analysis, payment_link=session.url)
+    return render_template('oracle_dashboard.html', account_id=account_id, analysis=analysis, payment_link=session.url)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
