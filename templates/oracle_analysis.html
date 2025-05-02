@@ -3,37 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <title>Oracle Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Georgia", serif;
+      background: linear-gradient(to bottom right, #f6f0ff, #e5f2ff);
+      color: #2c2c2c;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1, h2, h3, h4 {
+      color: #4b0082;
+    }
+
+    p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0.5rem auto 1.5rem auto;
+    }
+
+    form {
+      background: #ffffffdd;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    input[type="file"], input[type="text"] {
+      padding: 0.5rem;
+      width: 90%;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 1rem;
+      background-color: #6a0dad;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4b0082;
+    }
+
+    code {
+      display: block;
+      background: #f3f3f3;
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin: 1rem auto;
+      font-size: 0.95rem;
+      color: #6a0dad;
+    }
+
+    canvas {
+      margin-top: 1rem;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      color: #4b0082;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 2rem;">
+<body>
   <h1>🔍 Step 2: Upload Screenshot and Charge Your Friend</h1>
-  <p style="max-width: 600px; margin: 1rem auto; font-size: 1.1rem;">
-    Upload your friend's screenshot here to receive divine analysis.
-    Then, generate a payment link to charge them $1 for your wisdom.
+  <p>
+    Upload your friend's screenshot below to receive divine GPT-powered insight.
+    Then generate a payment link to charge them $1 for your wisdom.
   </p>
 
   <form action="" method="POST" enctype="multipart/form-data">
+    <h3>📸 Upload Screenshots</h3>
     <input type="file" name="screenshots" accept="image/*" multiple required />
-    <br/><br/>
-    <button type="submit" style="padding: 1rem 2rem;">📜 Analyze Screenshot</button>
+    <br/>
+    <button type="submit">📜 Analyze Screenshot</button>
   </form>
 
-  <br/>
-
   <form action="/generate-payment-link" method="POST">
-    <label for="oracle_id">Enter your Oracle ID:</label>
-    <input type="text" name="oracle_id" required style="margin: 0.5rem;" />
-    <button type="submit" style="padding: 0.5rem 1.2rem;">💸 Generate Payment Link</button>
+    <h3>💸 Generate Payment Link</h3>
+    <label for="oracle_id">Enter your Oracle ID:</label><br/>
+    <input type="text" name="oracle_id" required />
+    <br/>
+    <button type="submit">Generate Payment Link</button>
   </form>
 
   {% if payment_link %}
-    <h3>Your Payment Link</h3>
-    <code id="payment-link" style="font-size: 1rem;">{{ payment_link }}</code>
-    <br/>
-    <button onclick="copyLink()" style="margin-top: 0.5rem;">📋 Copy to Clipboard</button>
+    <h3>🔗 Your Payment Link</h3>
+    <code id="payment-link">{{ payment_link }}</code>
+    <button onclick="copyLink()">📋 Copy to Clipboard</button>
 
-    <div style="margin-top: 2rem;">
-      <h4>Scan QR Code</h4>
+    <div>
+      <h4>📱 Shareable QR Code</h4>
       <canvas id="qrcode"></canvas>
     </div>
 
@@ -45,24 +125,21 @@
         });
       }
 
-      const qrLink = document.getElementById("payment-link").innerText;
-      QRCode.toCanvas(document.getElementById("qrcode"), qrLink, { width: 200 });
+      QRCode.toCanvas(document.getElementById("qrcode"), document.getElementById("payment-link").innerText, { width: 200 });
     </script>
   {% endif %}
 
   {% if analysis %}
     <h2>🧠 GPT’s Oracle Insight</h2>
-    <p style="white-space: pre-wrap; margin-top: 1rem;">{{ analysis }}</p>
-    <p style="color: gray; font-size: 0.9rem;">Copy this and send it to your friend once they’ve paid.</p>
+    <p style="white-space: pre-wrap;">{{ analysis }}</p>
+    <p style="color: #555; font-size: 0.9rem;">Copy and send this to your friend after they’ve paid.</p>
   {% endif %}
 
   {% if extracted_text %}
-    <h3>📄 Extracted Text from Screenshot</h3>
-    <p style="white-space: pre-wrap; color: gray;">{{ extracted_text }}</p>
+    <h3>📄 Extracted Text</h3>
+    <p style="white-space: pre-wrap; color: #444;">{{ extracted_text }}</p>
   {% endif %}
 
-  <p style="margin-top: 2rem;">
-    <a href="/" style="font-size: 1rem;">⬅️ Back to Homepage</a>
-  </p>
+  <a href="/" class="back-link">⬅️ Back to Homepage</a>
 </body>
 </html>

@@ -3,39 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <title>Situationship Oracle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Georgia", serif;
+      background: linear-gradient(to bottom right, #f6f0ff, #e5f2ff);
+      color: #2c2c2c;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1, h2 {
+      color: #4b0082;
+    }
+
+    p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0.5rem auto 1.5rem auto;
+    }
+
+    .oracle-section {
+      background: #ffffffdd;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    button {
+      background-color: #6a0dad;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4b0082;
+    }
+
+    code {
+      display: inline-block;
+      background: #f3f3f3;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      color: #6a0dad;
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    .footer {
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      color: #999;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 2rem;">
-  <h1>💬 Analyze Your Friends’ Situationship Texts — and Get Paid</h1>
-  <p style="max-width: 600px; margin: 1rem auto; font-size: 1.1rem;">
-    Become a Situationship Oracle: your friends send you their confusing texts,
-    and you give them GPT-powered insight — for $1 a reading.
+<body>
+  <h1>🔮 Become a Situationship Oracle</h1>
+  <p>
+    Confused texts. Mixed signals. Emotional chaos. <br/>
+    As a certified Situationship Oracle, you can upload your friends' screenshots, let GPT analyze them, and get paid $1 per reading.
   </p>
 
   <form action="/create-oracle-account" method="GET">
-    <button type="submit" style="padding: 1rem 2rem; font-size: 1rem; margin-top: 1rem;">
-      🔥 Become an Oracle Now
-    </button>
+    <button>✨ Become an Oracle</button>
   </form>
 
-  <hr style="margin: 3rem auto; width: 60%;" />
+  <div class="oracle-section">
+    <h2>🧙‍♀️ Active Oracles</h2>
+    <p>These oracles are available and earning.</p>
 
-  <h2>🧙‍♀️ Active Oracles</h2>
-  <p style="color: gray; margin-bottom: 2rem;">
-    These oracles are ready to be paid for insights.
-  </p>
+    {% if oracles %}
+      {% for id in oracles %}
+        <div style="margin-bottom: 2rem;">
+          <strong>Oracle {{ loop.index }}</strong><br/>
+          ID: <code>{{ id }}</code><br/>
+          <form action="/pay/{{ id }}" method="POST">
+            <button style="margin-top: 0.5rem;">💸 Pay this Oracle $1</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No oracles yet — be the first!</p>
+    {% endif %}
+  </div>
 
-  {% if oracles %}
-    {% for id in oracles %}
-      <div style="margin-bottom: 2rem;">
-        <strong>Oracle {{ loop.index }}</strong><br/>
-        Oracle ID: <code>{{ id }}</code><br/>
-        <form action="/pay/{{ id }}" method="POST">
-          <button style="margin-top: 0.5rem; padding: 0.5rem 1rem;">💸 Pay this Oracle $1</button>
-        </form>
-      </div>
-    {% endfor %}
-  {% else %}
-    <p>No oracles yet — be the first to sign up.</p>
-  {% endif %}
+  <p class="footer">Made with 💜 and GPT</p>
 </body>
 </html>
