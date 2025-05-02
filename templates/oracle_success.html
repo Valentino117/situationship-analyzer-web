@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>You're an Oracle!</title>
+</head>
+<body style="font-family: serif; text-align: center; padding: 2rem;">
+  <h1>✨ You're now an Oracle! You can receive payments. ✨</h1>
+
+  {% if account_id %}
+    <p>This is your Oracle ID:</p>
+    <code>{{ account_id }}</code>
+
+    <p>To let others pay you for situationship readings, share this payment link:</p>
+    <code>https://situationship-analyzer-web.onrender.com/pay/{{ account_id }}</code>
+
+    <p style="margin-top: 2rem;">
+      <a href="/" style="font-size: 1.2rem;">🔙 Back to Homepage</a>
+    </p>
+  {% endif %}
+</body>
+</html>
