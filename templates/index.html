@@ -1,85 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Situationship Oracle</title>
   <style>
     body {
-      font-family: 'Helvetica Neue', sans-serif;
-      background: #fff7f0;
-      padding: 2rem;
+      background: #fffaf8;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       text-align: center;
+      padding: 3rem;
     }
-    h1 {
-      color: #6d28d9;
-    }
-    p {
-      font-size: 1.2rem;
-      margin: 1rem auto 2rem;
+    .container {
       max-width: 600px;
-    }
-    input[type="text"] {
-      padding: 0.6rem;
-      font-size: 1rem;
-      width: 300px;
-      max-width: 90%;
-      margin-bottom: 1rem;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
     }
     button {
-      background-color: #6d28d9;
-      color: white;
-      padding: 0.8rem 2rem;
+      padding: 1rem 2rem;
       font-size: 1rem;
+      background-color: #8e44ad;
+      color: white;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #5b21b6;
-    }
-    .oracle-box {
-      margin-top: 3rem;
-    }
-    .oracle-card {
-      background: #ffffff;
       border-radius: 8px;
-      padding: 1rem;
-      margin: 1rem auto;
-      max-width: 500px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    input {
+      padding: 0.6rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+      width: 80%;
+      max-width: 300px;
+    }
+    .login {
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <h1>🔮 Situationship Oracle</h1>
-  <p>Give advice on your friends' situationship texts. Get paid.</p>
+  <div class="container">
+    <h1>💘 Situationship Oracle</h1>
+    <p>Give advice on your friends' situationship texts. Get paid.</p>
 
-  <form action="/create-oracle-account" method="GET">
-    <button type="submit">🧙 Become an Oracle</button>
-  </form>
+    <form action="/create-oracle-account" method="GET">
+      <button type="submit">🧙 Become an Oracle</button>
+    </form>
 
-  <hr style="margin: 3rem 0;">
-
-  <form action="/oracle-dashboard" method="GET">
-    <p><strong>Already an Oracle?</strong></p>
-    <input type="text" name="account_id" placeholder="Enter Stripe Account ID" required>
-    <br><br>
-    <button type="submit">🧭 Access Your Dashboard</button>
-  </form>
-
-  <div class="oracle-box">
-    <h2>🌟 Top Oracles</h2>
-    {% if oracles %}
-      {% for id, info in oracles.items() %}
-        <div class="oracle-card">
-          <strong>{{ info.name }}</strong><br/>
-          💰 Earnings: ${{ "%.2f"|format(info.earned) }}<br/>
-          💼 Platform Cut: ${{ "%.2f"|format(info.platform_cut) }}
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>No oracles have joined yet. Be the first to divine!</p>
-    {% endif %}
+    <div class="login">
+      <form action="/oracle-dashboard" method="GET">
+        <p>Already an Oracle? Enter your Stripe Account ID:</p>
+        <input type="text" name="account_id" placeholder="acct_..." required>
+        <br>
+        <button type="submit">🔑 Access Your Dashboard</button>
+      </form>
+    </div>
   </div>
 </body>
 </html>
